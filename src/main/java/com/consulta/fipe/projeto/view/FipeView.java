@@ -30,8 +30,25 @@ public class FipeView {
                 System.out.println("Cód.: " + marca.codigo() + "\t\t\tDescr.: " + marca.nome());
             }
             obterModeloVeiculo(opcaoVeiculo, marcas);
+            System.out.println("voltou nesse ponto qui.");
+//            reduzirListaModelos(modelos);
         } catch (JsonSyntaxException e) {
             System.out.println("Tipo inválido! Digite uma opção válida. [entrada]");
+        }
+    }
+
+    private void reduzirListaModelos(Modelo modelos) {
+        System.out.println("Digite um trecho do nome do veículo para consulta: ");
+        String trechoDecr = scanner.nextLine();
+        var modeloFiltrado = modelos.modelos().stream()
+                .filter(m -> m.nome().toLowerCase().contains(trechoDecr.toLowerCase()))
+                .toList();
+        if (modeloFiltrado.isEmpty()) {
+            System.out.println("Nenhum modelo encontrado com esse trecho!");
+        } else {
+            modeloFiltrado.forEach(
+                    m -> System.out.println("Cód.: " + m.codigo() + "\t\t\tDescr.: " + m.nome())
+            );
         }
     }
 
@@ -41,8 +58,9 @@ public class FipeView {
             Modelo modelos = fipeService.obterModelos(opcaoVeiculo, opcaoModelo);
             System.out.println("aqui em obterModeloVeiculo...");
             modelos.modelos().forEach(m -> System.out.println("Cód.: " + m.codigo() + "\t\t\tDescr.: " + m.nome()));
+            reduzirListaModelos(modelos);
         } catch (Exception e) {
-            System.out.println("Erro de requisição com o servidor! " + e.getMessage());
+            throw new RuntimeException("Erro de requisição com o servidor! " + e.getMessage());
         }
     }
 
