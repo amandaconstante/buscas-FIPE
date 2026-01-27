@@ -23,7 +23,7 @@ public class FipeView {
         System.out.println("*** OPÇÕES ***");
         System.out.println("Carros\nMotos\nCaminhoes");
         System.out.println("Digite uma das opções para consultar valores: ");
-        String opcaoVeiculo = scanner.nextLine();
+        String opcaoVeiculo = scanner.nextLine().toLowerCase();
 
         try {
             List<Dados> marcas = exibirMarcas(opcaoVeiculo);
@@ -37,9 +37,7 @@ public class FipeView {
 
     private List<Dados> exibirMarcas(String opcaoVeiculo) {
         List<Dados> marcas = fipeService.obterMarcasVeiculo(opcaoVeiculo);
-        for(Dados dados : marcas) {
-            System.out.println("Cód.: " + dados.codigo() + "\t\t\tDescr.: " + dados.nome());
-        }
+        marcas.forEach(m -> System.out.println("Cód.: " + m.codigo() + "\t\t\tDescr.: " + m.nome()));
         return marcas;
     }
 
@@ -50,6 +48,7 @@ public class FipeView {
         if (fipeService.isCodigoValido(codModelo, filtrado)) {
             try {
                 List<Veiculo> veiculos = fipeService.obterPrecos(tipoVeiculo, codMarca, codModelo);
+                System.out.println("TODOS OS VEÍCULOS COM VALORES POR ANO: ");
                 veiculos.forEach(System.out::println);
             } catch (JsonSyntaxException e) {
                 throw new RuntimeException("Erro de leitura do servidor. ERRO: " + e.getMessage());
@@ -80,8 +79,8 @@ public class FipeView {
             Modelo modelos = fipeService.obterModelos(opcaoVeiculo, codMarca);
             modelos.modelos().forEach(m -> System.out.println("Cód.: " + m.codigo() + "\t\t\tDescr.: " + m.nome()));
             return reduzirListaModelos(modelos);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro de requisição com o servidor! " + e.getMessage());
+        } catch (JsonSyntaxException e) {
+            throw new RuntimeException("Erro de requisição com o servidor. " + e.getMessage());
         }
     }
 

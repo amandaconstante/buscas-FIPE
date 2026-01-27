@@ -13,40 +13,23 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FipeService {
 
     private static final Gson gson = new GsonBuilder()
-//            .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
             .create();
     private static final HttpClient client = HttpClient.newHttpClient();
     private static final String url = "https://parallelum.com.br/fipe/api/v1/";
 
 
     public List<Dados> obterMarcasVeiculo(String tipoVeiculo) {
-
         var address = url + tipoVeiculo + "/marcas";
+        String response = consomeAPI(address);
+        TypeToken<List<Dados>> collectionType = new TypeToken<>() {
+        };
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(address))
-                .build();
-
-        try {
-            HttpResponse<String> response = client
-                    .send(request, HttpResponse.BodyHandlers.ofString());
-
-            TypeToken<List<Dados>> collectionType = new TypeToken<List<Dados>>(){};
-
-            List<Dados> marcas = gson.fromJson(response.body(), collectionType);
-
-            return marcas;
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        return gson.fromJson(response, collectionType);
     }
 
 
@@ -58,55 +41,35 @@ public class FipeService {
 
     public Modelo obterModelos(String tipoVeiculo, String codMarca) {
         var address = url + tipoVeiculo + "/marcas/" + codMarca + "/modelos";
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(address))
-                .build();
-        try {
-            HttpResponse<String> response = client
-                    .send(request, HttpResponse.BodyHandlers.ofString());
-
-            Modelo modelos = gson.fromJson(response.body(), Modelo.class);
-
-            return modelos;
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        String response = consomeAPI(address);
+        return gson.fromJson(response, Modelo.class);
     }
 
     public List<Veiculo> obterPrecos(String tipoVeiculo, String codMarca, String codModelo) {
         var address = url + tipoVeiculo + "/marcas/" + codMarca + "/modelos/" + codModelo + "/anos";
+        String response = consomeAPI(address);
+        TypeToken<List<Dados>> collectionType = new TypeToken<>(){};
+        List<Dados> dadosAnos = gson.fromJson(response, collectionType);
 
+        return dadosAnos.stream()
+                .map(a -> obterValorFinal(address, a.codigo()))
+                .toList();
+    }
+
+    private Veiculo obterValorFinal(String address, String ano) {
+        address += "/" + ano;
+        String response = consomeAPI(address);
+        return gson.fromJson(response, Veiculo.class);
+    }
+
+    private String consomeAPI(String address) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(address))
                 .build();
         try {
             HttpResponse<String> response = client
                     .send(request, HttpResponse.BodyHandlers.ofString());
-
-            TypeToken<List<Dados>> collectionType = new TypeToken<List<Dados>>(){};
-
-            List<Dados> dadosAnos = gson.fromJson(response.body(), collectionType);
-
-            return dadosAnos.stream()
-                    .map(a -> obterValorFinal(address, a.codigo()))
-                    .toList();
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Veiculo obterValorFinal(String address, String ano) {
-        var consulta = address + "/" + ano;
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(consulta))
-                .build();
-        try {
-            HttpResponse<String> response = client
-                    .send(request, HttpResponse.BodyHandlers.ofString());
-            return gson.fromJson(response.body(), Veiculo.class);
+            return response.body();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
