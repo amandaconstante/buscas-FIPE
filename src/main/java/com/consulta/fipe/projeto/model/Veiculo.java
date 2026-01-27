@@ -1,13 +1,13 @@
 package com.consulta.fipe.projeto.model;
 
-import java.math.BigDecimal;
+import com.google.gson.annotations.SerializedName;
 
-public record Veiculo(int tipoVeiculo,
-                      BigDecimal valor,
-//                      String marca,
-                      Marca marca,
-                      Long AnoModelo,
-                      String combustivel,
-                      String codigoFipe, String
-                      mesReferencia) {
+public record Veiculo(//@SerializedName("TipoVeiculo") int tipoVeiculo,
+                      @SerializedName("Valor") String valor,
+                      @SerializedName("Marca") String marca,
+                      @SerializedName("Modelo") String modelo,
+                      @SerializedName("AnoModelo") Long anoModelo,
+                      @SerializedName("Combustivel") String combustivel,
+                      @SerializedName("CodigoFipe") String codigoFipe,
+                      @SerializedName("MesReferencia") String mesReferencia) {
 }

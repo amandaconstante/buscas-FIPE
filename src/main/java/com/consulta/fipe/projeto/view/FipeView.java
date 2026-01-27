@@ -1,7 +1,8 @@
 package com.consulta.fipe.projeto.view;
 
-import com.consulta.fipe.projeto.model.Marca;
+import com.consulta.fipe.projeto.model.Dados;
 import com.consulta.fipe.projeto.model.Modelo;
+import com.consulta.fipe.projeto.model.Veiculo;
 import com.consulta.fipe.projeto.service.FipeService;
 import com.google.gson.JsonSyntaxException;
 
@@ -25,52 +26,71 @@ public class FipeView {
         String opcaoVeiculo = scanner.nextLine();
 
         try {
-            List<Marca> marcas = fipeService.obterMarcasVeiculo(opcaoVeiculo);
-            for(Marca marca : marcas) {
-                System.out.println("Cód.: " + marca.codigo() + "\t\t\tDescr.: " + marca.nome());
-            }
-            obterModeloVeiculo(opcaoVeiculo, marcas);
-            System.out.println("voltou nesse ponto qui.");
-//            reduzirListaModelos(modelos);
+            List<Dados> marcas = exibirMarcas(opcaoVeiculo);
+            String codMarca = getInputModelo(marcas);
+            List<Dados> modelosFiltrados = exibirEfiltrarListaModelo(opcaoVeiculo, codMarca);
+            consultarValores(modelosFiltrados, opcaoVeiculo, codMarca);
         } catch (JsonSyntaxException e) {
             System.out.println("Tipo inválido! Digite uma opção válida. [entrada]");
         }
     }
 
-    private void reduzirListaModelos(Modelo modelos) {
+    private List<Dados> exibirMarcas(String opcaoVeiculo) {
+        List<Dados> marcas = fipeService.obterMarcasVeiculo(opcaoVeiculo);
+        for(Dados dados : marcas) {
+            System.out.println("Cód.: " + dados.codigo() + "\t\t\tDescr.: " + dados.nome());
+        }
+        return marcas;
+    }
+
+    private void consultarValores(List<Dados> filtrado, String tipoVeiculo, String codMarca) {
+        System.out.println("Digite o código do modelo para consultar valores: ");
+        var codModelo = scanner.nextLine();
+
+        if (fipeService.isCodigoValido(codModelo, filtrado)) {
+            try {
+                List<Veiculo> veiculos = fipeService.obterPrecos(tipoVeiculo, codMarca, codModelo);
+                veiculos.forEach(System.out::println);
+            } catch (JsonSyntaxException e) {
+                throw new RuntimeException("Erro de leitura do servidor. ERRO: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Código inválido!");
+        }
+    }
+
+    private List<Dados> reduzirListaModelos(Modelo modelos) {
         System.out.println("Digite um trecho do nome do veículo para consulta: ");
         String trechoDecr = scanner.nextLine();
         var modeloFiltrado = modelos.modelos().stream()
                 .filter(m -> m.nome().toLowerCase().contains(trechoDecr.toLowerCase()))
                 .toList();
         if (modeloFiltrado.isEmpty()) {
-            System.out.println("Nenhum modelo encontrado com esse trecho!");
+            System.out.println("Nenhum modelo encontrado com esse trecho.");
         } else {
             modeloFiltrado.forEach(
                     m -> System.out.println("Cód.: " + m.codigo() + "\t\t\tDescr.: " + m.nome())
             );
         }
+        return modeloFiltrado;
     }
 
-    private void obterModeloVeiculo(String opcaoVeiculo, List<Marca> marcas) {
-        String opcaoModelo = getInputModelo(marcas);
+    private List<Dados> exibirEfiltrarListaModelo(String opcaoVeiculo, String codMarca) {
         try {
-            Modelo modelos = fipeService.obterModelos(opcaoVeiculo, opcaoModelo);
-            System.out.println("aqui em obterModeloVeiculo...");
+            Modelo modelos = fipeService.obterModelos(opcaoVeiculo, codMarca);
             modelos.modelos().forEach(m -> System.out.println("Cód.: " + m.codigo() + "\t\t\tDescr.: " + m.nome()));
-            reduzirListaModelos(modelos);
+            return reduzirListaModelos(modelos);
         } catch (Exception e) {
             throw new RuntimeException("Erro de requisição com o servidor! " + e.getMessage());
         }
     }
 
-    private String getInputModelo(List<Marca> marcas) {
+    private String getInputModelo(List<Dados> marcas) {
         while(true) {
-            System.out.println("Digite o código do marca para consultar valores: ");
+            System.out.println("Digite o código do dados para consultar valores: ");
             String opModelo = scanner.nextLine();
 
             if (fipeService.isCodigoValido(opModelo, marcas)) {
-                System.out.println("vai sair daqui...");
                 return opModelo;
             }
             System.out.println("Código inválido! Digite uma opção válida.[obterModeloVeiculo]");
