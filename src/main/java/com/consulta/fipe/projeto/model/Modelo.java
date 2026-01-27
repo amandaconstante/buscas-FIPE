@@ -1,3 +1,6 @@
 package com.consulta.fipe.projeto.model;
 
-public record Modelo(String codigo, String nome) {}
+import java.util.List;
+
+public record Modelo(List<Marca> modelos) {
+}
