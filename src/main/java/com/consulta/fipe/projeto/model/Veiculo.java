@@ -1,13 +1,14 @@
 package com.consulta.fipe.projeto.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record Veiculo(//@SerializedName("TipoVeiculo") int tipoVeiculo,
-                      @SerializedName("Valor") String valor,
-                      @SerializedName("Marca") String marca,
-                      @SerializedName("Modelo") String modelo,
-                      @SerializedName("AnoModelo") Long anoModelo,
-                      @SerializedName("Combustivel") String combustivel,
-                      @SerializedName("CodigoFipe") String codigoFipe,
-                      @SerializedName("MesReferencia") String mesReferencia) {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record Veiculo(@JsonProperty("Valor") String valor,
+                      @JsonProperty("Marca") String marca,
+                      @JsonProperty("Modelo") String modelo,
+                      @JsonProperty("AnoModelo") Long ano,
+                      @JsonProperty("Combustivel") String combustivel,
+                      @JsonProperty("CodigoFipe") String codigoFipe,
+                      @JsonProperty("MesReferencia") String mesReferencia) {
 }

@@ -16,12 +16,21 @@
 
     <dependencies>
         <!-- Source: https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+<!--        <dependency>-->
+<!--            <groupId>com.google.code.gson</groupId>-->
+<!--            <artifactId>gson</artifactId>-->
+<!--            <version>2.12.1</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
+
+        <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.12.1</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.20.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
+
 
 </project>
