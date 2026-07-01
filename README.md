@@ -97,4 +97,6 @@ O projeto segue uma hierarquia de consulta lógica:
 ```
 5. Execute a classe `Main`.
 
-*Projeto desenvolvido como desafio prático da formação Java Alura / Oracle Next Education (ONE), do curso Java: trabalhando com lambdas, streams e Spring Framework da Alura/Oracle Next Education (ONE).*
+----
+
+> *Projeto desenvolvido como desafio prático da formação Java Alura / Oracle Next Education (ONE), do curso Java: trabalhando com lambdas, streams e Spring Framework da Alura/Oracle Next Education (ONE).*
